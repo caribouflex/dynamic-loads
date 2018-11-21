@@ -1,9 +1,9 @@
 import React from "react";
 import ErrorBoundary from "./ErrorBoundary";
 
-const create = callback => {
+const create = (callback, file) => {
   let scriptTag = document.createElement("script");
-  scriptTag.setAttribute("src", "/Bordeaux.js");
+  scriptTag.setAttribute("src", file);
   scriptTag.onload = callback;
   document.body.appendChild(scriptTag);
 };
@@ -12,19 +12,19 @@ export default class LoadableComponent extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      file: this.props.file,
+      componentName: this.props.componentName,
       ready: false,
       Component: undefined
     };
-    create(this.cb);
+    create(this.cb, this.state.file);
   }
 
   cb = e => {
-    // scriptToRemove.removeChild(scriptToRemove);
     console.log("LOAAAAADED");
-    console.log(window);
     this.setState({
       ready: true,
-      Component: window.Bordeaux
+      Component: window[this.state.componentName]
     });
   };
 

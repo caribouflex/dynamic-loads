@@ -17,7 +17,8 @@ class App extends Component {
             <a href="/contact">Contact</a>
           </nav>
         </header>
-        <LoadableComponent />
+        <LoadableComponent componentName="LikeButton" file="/LikeButton.js" />
+        <LoadableComponent componentName="RedBlock" file="/RedBlock.js" />
         <BrowserRouter>
           <Switch>
             <Route path="/" exact={true} component={Home} />
