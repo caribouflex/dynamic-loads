@@ -12,13 +12,10 @@ const usersRouter = require("./routes/users");
 const app = express();
 
 const editJSON = (newJsonComponent, cb) => {
-  console.log(newJsonComponent);
-  console.log("***************");
   const fileName = `${__dirname}/public/externalComponents.json`;
   let contents = fs.readFileSync(fileName);
   const jsonContent = JSON.parse(contents);
   jsonContent.push(newJsonComponent);
-  console.log(jsonContent);
   contents = JSON.stringify(jsonContent);
   // This will work for data big as 100 MB max effectively. Over this limit, we should use a database engine.
   fs.writeFile(fileName, contents, "utf8", cb);
@@ -59,9 +56,10 @@ app.post("/upload/metadata", (req, res, next) => {
   let componentFile = req.files.file;
   editJSON(JSON.parse(componentFile.data), () => {
     console.log("DONE.");
+    res.end();
   });
-  res.json({ file: `ff` });
 });
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
