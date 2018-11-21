@@ -22,11 +22,15 @@ class App extends Component {
         <LoadableComponent componentName="RedBlock" file="/RedBlock.js" />
         <FileUpload
           uploadTitle="Component"
-          uploadURL="http://localhost:8000/upload"
+          uploadURL="http://localhost:8000/upload/react"
         />
         <FileUpload
           uploadTitle="MetaData"
           uploadURL="http://localhost:8000/upload/metadata"
+        />
+        <FileUpload
+          uploadTitle="ZIP"
+          uploadURL="http://localhost:8000/upload/zip"
         />
         <BrowserRouter>
           <Switch>

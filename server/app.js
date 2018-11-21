@@ -4,12 +4,12 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
 const fs = require("fs");
-const zlib = require("zlib");
 const cors = require("cors");
 const fileUpload = require("express-fileupload");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 const app = express();
+const JSZip = require("jszip");
 
 const editJSON = (newJsonComponent, cb) => {
   const fileName = `${__dirname}/public/externalComponents.json`;
@@ -38,7 +38,7 @@ app.use("/users", usersRouter);
 
 app.post("/upload/react", (req, res, next) => {
   let componentFile = req.files.file;
-
+  console.log(componentFile);
   componentFile.mv(
     `${__dirname}/public/react_components/${componentFile.name}`,
     function(err) {
@@ -54,12 +54,63 @@ app.post("/upload/react", (req, res, next) => {
 
 app.post("/upload/metadata", (req, res, next) => {
   let componentFile = req.files.file;
+
   editJSON(JSON.parse(componentFile.data), () => {
     console.log("DONE.");
     res.end();
   });
 });
 
+app.post("/upload/zip", (req, res, next) => {
+  let componentFile = req.files.file;
+  let zipProcess = 2; //when this is equal to 0 all promises are done.
+
+  const endRequest = () => {
+    zipProcess--;
+    if (zipProcess === 0) {
+      console.log("ENDREQUEST.");
+      res.end();
+    }
+  };
+
+  JSZip.loadAsync(componentFile.data).then(function(zip) {
+    const files = Object.keys(zip.files);
+    console.log(files);
+    files.forEach(file => {
+      if (file.endsWith("js")) {
+        console.log("file JS process...");
+        zip
+          .file(file)
+          .async("string")
+          .then(function(data) {
+            fs.writeFile(
+              `${__dirname}/public/react_components/${file}`,
+              data,
+              function(err) {
+                if (err) {
+                  return console.log(err);
+                }
+                console.log("The JS file was saved!");
+                endRequest();
+              }
+            );
+          });
+      } else if (file.endsWith("json")) {
+        console.log("file JSON process...");
+        zip
+          .file(file)
+          .async("string")
+          .then(function(data) {
+            editJSON(JSON.parse(data), () => {
+              endRequest();
+            });
+          });
+      }
+    });
+    console.log("ZIP DONE.");
+  });
+  console.log("ZIP FUNC");
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
