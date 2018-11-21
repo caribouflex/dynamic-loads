@@ -1,18 +1,28 @@
-var createError = require("http-errors");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 const fs = require("fs");
 const zlib = require("zlib");
+const cors = require("cors");
+const fileUpload = require("express-fileupload");
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
+const app = express();
 
-var cors = require("cors");
-var fileUpload = require("express-fileupload");
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
-
-var app = express();
+const editJSON = (newJsonComponent, cb) => {
+  console.log(newJsonComponent);
+  console.log("***************");
+  const fileName = `${__dirname}/public/externalComponents.json`;
+  let contents = fs.readFileSync(fileName);
+  const jsonContent = JSON.parse(contents);
+  jsonContent.push(newJsonComponent);
+  console.log(jsonContent);
+  contents = JSON.stringify(jsonContent);
+  // This will work for data big as 100 MB max effectively. Over this limit, we should use a database engine.
+  fs.writeFile(fileName, contents, "utf8", cb);
+};
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -30,29 +40,27 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 app.post("/upload/react", (req, res, next) => {
-  console.log(req);
   let componentFile = req.files.file;
 
   componentFile.mv(
-    `${__dirname}/public/react_components/${req.body.filename}.js`,
+    `${__dirname}/public/react_components/${componentFile.name}`,
     function(err) {
       if (err) {
         return res.status(500).send(err);
       }
-
-      // const fileContents = fs.createReadStream(
-      //   `${__dirname}/public/react_components/${req.body.filename}.js`
-      // );
-      // const writeStream = fs.createWriteStream("./data/file1.txt");
-      // const unzip = zlib.createGunzip();
-
-      // fileContents.pipe(unzip).pipe(writeStream);
-
       res.json({
-        file: `react_component/${req.body.filename}.js`
+        file: `react_component/${componentFile.name}`
       });
     }
   );
+});
+
+app.post("/upload/metadata", (req, res, next) => {
+  let componentFile = req.files.file;
+  editJSON(JSON.parse(componentFile.data), () => {
+    console.log("DONE.");
+  });
+  res.json({ file: `ff` });
 });
 
 // catch 404 and forward to error handler

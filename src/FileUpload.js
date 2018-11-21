@@ -5,7 +5,8 @@ class FileUpload extends Component {
     super(props);
 
     this.state = {
-      imageURL: "",
+      uploadURL: this.props.uploadURL,
+      uploadTitle: this.props.uploadTitle,
       childrens: this.props.childrens
     };
 
@@ -19,15 +20,11 @@ class FileUpload extends Component {
     data.append("file", this.uploadInput.files[0]);
     data.append("filename", this.fileName.value);
 
-    fetch("http://localhost:8000/upload/react", {
+    fetch(this.state.uploadURL, {
       method: "POST",
       body: data
     })
       .then(response => {
-        // this.setState({
-        //   imageURL: `http://localhost:8000/${response.data.file}`,
-        //   uploadStatus: true
-        // });
         console.log("Upload Succeed !");
       })
       .catch(function(error) {
@@ -38,6 +35,7 @@ class FileUpload extends Component {
   render() {
     return (
       <div style={{ border: "1px solid #e3e3e3" }}>
+        {this.state.uploadTitle}
         <form onSubmit={this.handleUploadImage}>
           <div>
             <input
@@ -60,8 +58,6 @@ class FileUpload extends Component {
           <div>
             <button>Upload</button>
           </div>
-          {/* <img src={this.state.imageURL} alt="img" /> */}
-          {/* {this.state.childrenElms} */}
         </form>
       </div>
     );

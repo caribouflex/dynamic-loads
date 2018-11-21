@@ -20,7 +20,14 @@ class App extends Component {
         </header>
         <LoadableComponent componentName="LikeButton" file="/LikeButton.js" />
         <LoadableComponent componentName="RedBlock" file="/RedBlock.js" />
-        <FileUpload />
+        <FileUpload
+          uploadTitle="Component"
+          uploadURL="http://localhost:8000/upload"
+        />
+        <FileUpload
+          uploadTitle="MetaData"
+          uploadURL="http://localhost:8000/upload/metadata"
+        />
         <BrowserRouter>
           <Switch>
             <Route path="/" exact={true} component={Home} />
