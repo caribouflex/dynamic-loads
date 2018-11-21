@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import Home from "./Home";
-import About from "./About";
+import Home from "./pages/Home";
+import About from "./pages/About";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import { LoadableContact } from "./LoadableContact";
+import { LoadableContact } from "./loadable/LoadableContact";
 import "./App.css";
-import LoadableComponent from "./LoadableComponent";
+import LoadableComponent from "./loadable/LoadableComponent";
+import FileUpload from "./FileUpload";
 
 class App extends Component {
   render() {
@@ -19,6 +20,7 @@ class App extends Component {
         </header>
         <LoadableComponent componentName="LikeButton" file="/LikeButton.js" />
         <LoadableComponent componentName="RedBlock" file="/RedBlock.js" />
+        <FileUpload />
         <BrowserRouter>
           <Switch>
             <Route path="/" exact={true} component={Home} />

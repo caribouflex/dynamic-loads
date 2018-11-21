@@ -1,5 +1,5 @@
 import React from "react";
-import ErrorBoundary from "./ErrorBoundary";
+import ErrorBoundary from "../ErrorBoundary";
 
 const create = (callback, file) => {
   let scriptTag = document.createElement("script");
